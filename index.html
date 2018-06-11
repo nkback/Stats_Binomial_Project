@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <title>Nathan Back Stats Project</title>
+    <!-- CSS -->
+    <style>
+        .jumbotron{
+            background-color: #ff6666 !important;
+            color: #ffffff !important;
+        }
+    </style>
+
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <!-- Javascript -->
+    <script>
+        var k = 100;
+        $(document).ready(function(){
+            var sizeInput = $('#sizeInput');
+            var probabilityInput = $('#probabilityInput');
+            function factorialize(num){
+                if (num == 0){
+                    return 1;
+                }
+                return (num * factorialize(num - 1))
+            }
+            function binomial(n,p){
+                var numerator = factorialize(n);
+                var kFact = factorialize(k);
+                var diffFact = factorialize(n-k);
+                return (numerator/(kFact*diffFact))*p^k*(1-p)^(n-k); 
+
+            }
+            sizeInput.change(function(){
+                // console.log($(this).val());
+                $('#size').text(sizeInput.val());
+            });
+            probabilityInput.change(function(){
+                // console.log($(this).val());
+                $('#probability').text(probabilityInput.val());
+            });
+
+
+            $('#calculate').click(function(){
+                if(sizeInput.val() < 0){
+                    alert("You need to enter a positive value for size n. Please try again.");
+                    return;
+                }
+                else if(Math.floor(sizeInput.val()) != sizeInput.val() || !$.isNumeric(sizeInput.val())){
+                    alert("You need to enter an integer for size n. Please try again.");
+                    return;
+                }
+
+                if(probabilityInput.val() < 0 || probabilityInput.val() > 1 || !$.isNumeric(probabilityInput.val())){
+                    alert("Your input for p needs to be 0 <= p <= 1");
+                    return;
+                }
+
+                console.log(binomial(sizeInput.val(), probabilityInput.val()));
+            })
+        });
+    </script>
+</head>
+<body>
+    <div class="jumbotron text-center">
+        <h1>X ~ Bin(<span id="size">n</span>,<span id="probability">p</span>)</h1>
+        <h2>Binomial Distribution Calculator</h2>
+        <p>Enter the size and probability of the data (n,p).</p>
+        <form class="form-inline" action="#">
+            <div class="form-group">
+                <div class="input-group">
+                    <input id="sizeInput" type="text" class="form-control" size="25" placeholder="input n, your size.">
+                </div>
+                <div class="input-group">
+                    <input id="probabilityInput" type="text" class="form-control" size="25" placeholder="input p, your probability.">
+                </div>                
+            </div>
+            <button id="calculate" class="btn btn-default">Calculate</button>
+        </form>
+    </div>
+</body>
+</html>
