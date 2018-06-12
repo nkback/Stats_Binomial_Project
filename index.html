@@ -27,7 +27,6 @@
     <!-- Javascript -->
     <script>
         $(document).ready(function(){
-            console.log($('#myName').css("color"));
             var sizeInput = $('#sizeInput');
             var probabilityInput = $('#probabilityInput');
             var numSuccesses = $('#numSuccessInput');
@@ -35,6 +34,9 @@
 
             function factorialize(num){
                 var total = num;
+                if(num == 0){
+                    return 1;
+                }
                 while(true){
                     if(num == 1)
                         break;
@@ -42,40 +44,55 @@
                 }
                 return total;
             }
-
+            function binIterations(sign,x,n,p){
+                var answer = 0;
+                if(sign == 2){
+                    //Greater than
+                    for(var i = x; i <= n; i++){
+                        answer += binomial(i,n,p);
+                        // answer += (factorialize(n)/(factorialize(n-i)*factorialize(i))*Math.pow(p,i)*Math.pow(1-p,n-i));
+                    }
+                }
+                else{
+                    for(var i = 0; i <= x; i++){
+                        answer += binomial(i,n,p);
+                        // answer += (factorialize(n)/(factorialize(n-i)*factorialize(i))*Math.pow(p,i)*Math.pow(1-p,n-i));
+                    }
+                }
+                return answer;
+            }
             function binomial(x,n,p){
                 return (factorialize(n)/(factorialize(n-x)*factorialize(x))*Math.pow(p,x)*Math.pow(1-p,n-x));
             }
             sizeInput.change(function(){
-                $('#size').text(sizeInput.val());
+                $('.size').text(sizeInput.val());
             });
             probabilityInput.change(function(){
-                $('#probability').text(probabilityInput.val());
+                $('.probability').text(probabilityInput.val());
             });
             probFunction.change(function(){
-                console.log(probFunction.val());
                 if(probFunction.val() == 1){
-                    $('#sign').text('');
+                    $('.sign').text('');
                 }
                 else if(probFunction.val() == 2){
-                    $('#sign').text('>');             
+                    $('.sign').text('>');             
                 }
                 else{
-                    $('#sign').text('<');
+                    $('.sign').text('<');
                 }
             })
             numSuccesses.change(function(){
-                $('#xValue').text(numSuccesses.val());
+                $('.xValue').text(numSuccesses.val());
             });
 
 
             $('#calculate').click(function(){
                 if(numSuccesses.val() < 0){
-                    alert("You need to enter a positive value for size n. Please try again.");
+                    alert("You need to enter a positive value for number of successes, x. Please try again.");
                     return;
                 }
                 else if(Math.floor(numSuccesses.val()) != numSuccesses.val() || !$.isNumeric(numSuccesses.val())){
-                    alert("You need to enter an integer for size n. Please try again.");
+                    alert("You need to enter an integer for number of successes, x. Please try again.");
                     return;
                 }
 
@@ -92,10 +109,26 @@
                     alert("Your input for p needs to be 0 <= p <= 1");
                     return;
                 }
-                
-
-                var result = binomial(numSuccesses.val(),sizeInput.val(), probabilityInput.val());
-                console.log(result);
+                var successes = parseInt(numSuccesses.val());
+                var sizeI = parseInt(sizeInput.val());
+                if(sizeI < successes){
+                    var result = 0;
+                }
+                else{
+                    if(probFunction.val() == 1){
+                        var result = binomial(numSuccesses.val(),sizeInput.val(), probabilityInput.val());
+                    }
+                    else if(probFunction.val() == 2){
+                        var result = binIterations(2,numSuccesses.val(),sizeInput.val(), probabilityInput.val());
+                    }
+                    else{
+                        var result = binIterations(3,numSuccesses.val(),sizeInput.val(), probabilityInput.val());
+                        //Less than
+                    }
+                }
+                $('#answer').text(result.toFixed(4));
+                $('#answerFormatted').text((result * 100).toFixed(1));
+                $('#myModal').modal();
             })
         });
     </script>
@@ -119,9 +152,8 @@
         </div>
     </nav>
     <div class="jumbotron text-center">
-        <h1>X ~ Bin(<span id="size">n</span>,<span id="probability">p</span>)</h1>
-        <h2>Find P(X<span id="sign"></span>=<span id="xValue">x</span>)</h1>
-        <!-- <h2>Binomial Distribution Calculator</h2> -->
+        <h1>X ~ Bin(<span class="size">n</span>,<span class="probability">p</span>)</h1>
+        <h2>Find P(X<span class="sign"></span>=<span class="xValue">x</span>)</h1>
         <p>Enter the size and probability of the data (n,p).</p>
         <form class="form-inline" action="#">
             <div class="form-group">
@@ -150,16 +182,44 @@
             <div class="col-md-2"></div>
             <div class="col-md-8">
                 <h2><i class="fa fa-basketball-ball"></i> NBA Application</h2>
-                <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                    Ut enim ad minim veniam, 
-                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                    Duis aute irure dolor in reprehenderit in voluptate velit 
-                    esse cillum dolore eu fugiat nulla pariatur.
-                    Excepteur sint occaecat cupidatat non proident,
-                        sunt in culpa qui officia deserunt mollit anim id est laborum."
+                <p>During the 2017-2018 NBA regular season the Utah Jazz had a rookie,
+                     Donovan Mitchell, who was their primary offensive scorer. His Field Goal
+                      percentage, or his average probability of making shots, was 41.3% or .413. 
+                      He averaged just around 22 shots per game, which on any given night, could
+                      represent his random sample of trials. With this in mind, I wanted to see
+                      probabilities of different shots made on any given night. Using Binomial distribution
+                       we can see that X ~ Bin(22,.413) would be the probability distribution for X.
+                </p>
+                <hr>
+                <p>
+                    Here are the results for 15 and 12 shots made:<br>
+                    P(X=15): 0.0071 or 0.7%<br>
+                    P(X<=15): 0.9971 or 99.7%<br>
+                    P(X>=15): 0.0100 or 1.0%<br>
+                    P(X=12): 0.0773 or 7.7%<br>
+                    P(X<=12): 0.9292 or 92.9%<br>
+                    P(X>=12): 0.1481 or 14.8%<br>
                 </p>
             </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Find P(X<span class="sign"></span>=<span class="xValue">x</span>), X ~ Bin(<span class="size">n</span>,<span class="probability">p</span>)</h4>
+            </div>
+            <div class="modal-body">
+                <p>The probability that P(X<span class="sign"></span>=<span class="xValue">x</span>) ends up being: <span id="answer"></span> or <span id="answerFormatted"></span>%</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+            </div>
+        
         </div>
     </div>
 </body>
