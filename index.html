@@ -24,34 +24,58 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <!-- Javascript -->
     <script>
-        var k = 100;
         $(document).ready(function(){
             var sizeInput = $('#sizeInput');
             var probabilityInput = $('#probabilityInput');
-            function factorialize(num){
-                if (num == 0){
-                    return 1;
-                }
-                return (num * factorialize(num - 1))
-            }
-            function binomial(n,p){
-                var numerator = factorialize(n);
-                var kFact = factorialize(k);
-                var diffFact = factorialize(n-k);
-                return (numerator/(kFact*diffFact))*p^k*(1-p)^(n-k); 
+            var numSuccesses = $('#numSuccessInput');
+            var probFunction = $('#probFunction');
 
+            function factorialize(num){
+                var total = num;
+                while(true){
+                    if(num == 1)
+                        break;
+                    total *= (--num);
+                }
+                return total;
+            }
+
+            function binomial(x,n,p){
+                return (factorialize(n)/(factorialize(n-x)*factorialize(x))*Math.pow(p,x)*Math.pow(1-p,n-x));
             }
             sizeInput.change(function(){
-                // console.log($(this).val());
                 $('#size').text(sizeInput.val());
             });
             probabilityInput.change(function(){
-                // console.log($(this).val());
                 $('#probability').text(probabilityInput.val());
+            });
+            probFunction.change(function(){
+                console.log(probFunction.val());
+                if(probFunction.val() == 1){
+                    $('#sign').text('');
+                }
+                else if(probFunction.val() == 2){
+                    $('#sign').text('>');             
+                }
+                else{
+                    $('#sign').text('<');
+                }
+            })
+            numSuccesses.change(function(){
+                $('#xValue').text(numSuccesses.val());
             });
 
 
             $('#calculate').click(function(){
+                if(numSuccesses.val() < 0){
+                    alert("You need to enter a positive value for size n. Please try again.");
+                    return;
+                }
+                else if(Math.floor(numSuccesses.val()) != numSuccesses.val() || !$.isNumeric(numSuccesses.val())){
+                    alert("You need to enter an integer for size n. Please try again.");
+                    return;
+                }
+
                 if(sizeInput.val() < 0){
                     alert("You need to enter a positive value for size n. Please try again.");
                     return;
@@ -65,24 +89,54 @@
                     alert("Your input for p needs to be 0 <= p <= 1");
                     return;
                 }
+                
 
-                console.log(binomial(sizeInput.val(), probabilityInput.val()));
+                var result = binomial(numSuccesses.val(),sizeInput.val(), probabilityInput.val());
+                console.log(result);
             })
         });
     </script>
 </head>
 <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span> 
+            </button>
+            <a class="navbar-brand" href="#">Binomial Distribution Calculator</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Nathan Back</a></li>
+            </ul>
+            </div>
+        </div>
+    </nav>
     <div class="jumbotron text-center">
         <h1>X ~ Bin(<span id="size">n</span>,<span id="probability">p</span>)</h1>
-        <h2>Binomial Distribution Calculator</h2>
+        <h2>Find P(X<span id="sign"></span>=<span id="xValue">x</span>)</h1>
+        <!-- <h2>Binomial Distribution Calculator</h2> -->
         <p>Enter the size and probability of the data (n,p).</p>
         <form class="form-inline" action="#">
             <div class="form-group">
                 <div class="input-group">
-                    <input id="sizeInput" type="text" class="form-control" size="25" placeholder="input n, your size.">
+                    <select id="probFunction" class="form-control" style="width: 130px">
+                        <option value="1">Find P(X=x)</option>
+                        <option value="2">Find P(X>=x)</option>
+                        <option value="3">Find P(X<=x)</option>
+                    </select>
                 </div>
                 <div class="input-group">
-                    <input id="probabilityInput" type="text" class="form-control" size="25" placeholder="input p, your probability.">
+                    <input id="numSuccessInput" type="text" class="form-control" size="20" placeholder="Number of sucesses, x">
+                </div>
+                <div class="input-group">
+                    <input id="sizeInput" type="text" class="form-control" size="20" placeholder="input number of trials">
+                </div>
+                <div class="input-group">
+                    <input id="probabilityInput" type="text" class="form-control" size="20" placeholder="input probability">
                 </div>                
             </div>
             <button id="calculate" class="btn btn-default">Calculate</button>
