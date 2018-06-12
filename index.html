@@ -50,13 +50,11 @@
                     //Greater than
                     for(var i = x; i <= n; i++){
                         answer += binomial(i,n,p);
-                        // answer += (factorialize(n)/(factorialize(n-i)*factorialize(i))*Math.pow(p,i)*Math.pow(1-p,n-i));
                     }
                 }
                 else{
                     for(var i = 0; i <= x; i++){
                         answer += binomial(i,n,p);
-                        // answer += (factorialize(n)/(factorialize(n-i)*factorialize(i))*Math.pow(p,i)*Math.pow(1-p,n-i));
                     }
                 }
                 return answer;
