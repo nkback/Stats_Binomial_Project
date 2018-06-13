@@ -47,7 +47,6 @@
             function binIterations(sign,x,n,p){
                 var answer = 0;
                 if(sign == 2){
-                    //Greater than
                     for(var i = x; i <= n; i++){
                         answer += binomial(i,n,p);
                     }
@@ -109,19 +108,19 @@
                 }
                 var successes = parseInt(numSuccesses.val());
                 var sizeI = parseInt(sizeInput.val());
+                var prob = parseFloat(probabilityInput.val());
                 if(sizeI < successes){
                     var result = 0;
                 }
                 else{
                     if(probFunction.val() == 1){
-                        var result = binomial(numSuccesses.val(),sizeInput.val(), probabilityInput.val());
+                        var result = binomial(successes,sizeI, prob);
                     }
                     else if(probFunction.val() == 2){
-                        var result = binIterations(2,numSuccesses.val(),sizeInput.val(), probabilityInput.val());
+                        var result = binIterations(2,successes,sizeI, prob);
                     }
                     else{
-                        var result = binIterations(3,numSuccesses.val(),sizeInput.val(), probabilityInput.val());
-                        //Less than
+                        var result = binIterations(3,successes,sizeI, prob);
                     }
                 }
                 $('#answer').text(result.toFixed(4));
